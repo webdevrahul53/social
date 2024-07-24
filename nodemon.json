@@ -1,0 +1,8 @@
+{
+    "env":{
+        "password":"ecommerce",
+        "database":"social",
+        "jwt_key":"ecommJwtKey",
+        "admin":"eyJhbGciOiJIUzI1Nkjdf;lsfspqoihefnOiI1ZjQ5YjI4NTg2Mfdgsdgd"
+    }
+}
