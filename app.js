@@ -1,3 +1,4 @@
+require('dotenv').config();
 var express = require('express');
 var app = express();
 var morgan = require('morgan'); 
@@ -10,7 +11,7 @@ var PostRouter = require('./router/posts')
 var FollowerRouter = require('./router/followers')
 var MessageRouter = require('./router/messages')
 
-mongoose.connect('mongodb+srv://ecommerce:'+process.env.password+'@ecommerce.gmuch.mongodb.net/'+process.env.database+'?retryWrites=true&w=majority',
+mongoose.connect(process.env.mongodburi,
 { 
     useNewUrlParser: true,
     useUnifiedTopology: true 
