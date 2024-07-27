@@ -47,7 +47,12 @@ app.use('/api/messages',MessageRouter)
 
 // Catch-all route to handle client-side routing in your front-end application
 app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, 'build', 'index.html'));
+    const indexPath = path.join(__dirname, 'build', 'index.html');
+    res.sendFile(indexPath, (err) => {
+      if (err) {
+        res.status(500).send(err);
+      }
+    });
 });
 
 app.use((req,res,next)=>{
