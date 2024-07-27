@@ -5,9 +5,9 @@ var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
 
 var UserRouter = require('./router/users')
-var ProductRouter = require('./router/products')
-var OrderRouter = require('./router/orders')
- 
+var PostRouter = require('./router/posts')
+var FollowerRouter = require('./router/followers')
+var MessageRouter = require('./router/messages')
  
 mongoose.connect('mongodb+srv://ecommerce:'+process.env.password+'@ecommerce.gmuch.mongodb.net/'+process.env.database+'?retryWrites=true&w=majority',
 { 
@@ -16,6 +16,7 @@ mongoose.connect('mongodb+srv://ecommerce:'+process.env.password+'@ecommerce.gmu
 }
 )
 
+app.use('/uploads', express.static('./uploads'));
 app.use(morgan('dev'));
 app.use(bodyParser.urlencoded({extended:false}))
 app.use(bodyParser.json())
@@ -36,8 +37,9 @@ app.use((req,res,next)=>{
 
 
 app.use('/users',UserRouter)
-app.use('/products',ProductRouter)
-app.use('/orders',OrderRouter)
+app.use('/posts',PostRouter)
+app.use('/followers',FollowerRouter)
+app.use('/messages',MessageRouter)
 
 app.use((req,res,next)=>{
     var error = new Error('404 Not found !');
