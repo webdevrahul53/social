@@ -62,7 +62,7 @@ router.post('/',checkAuth, async (req,res)=>{
 
 router.get('/:senderId/:recipientId', checkAuth,(req,res)=>{
   let { senderId , recipientId} = req.params
-  Messages.findOne({'participants.user_id': senderId, 'participants.user_id': recipientId}).populate('messages.senderId').exec().then(docs=>{ 
+  Messages.findOne({$and: [{'participants.user_id': senderId}, {'participants.user_id': recipientId}]}).populate('messages.senderId').exec().then(docs=>{ 
       if(docs){
         res.status(200).json(docs)
       }else {
