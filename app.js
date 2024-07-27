@@ -3,12 +3,13 @@ var app = express();
 var morgan = require('morgan'); 
 var bodyParser = require('body-parser');
 var mongoose = require('mongoose');
+const path = require('path');
 
 var UserRouter = require('./router/users')
 var PostRouter = require('./router/posts')
 var FollowerRouter = require('./router/followers')
 var MessageRouter = require('./router/messages')
- 
+
 mongoose.connect('mongodb+srv://ecommerce:'+process.env.password+'@ecommerce.gmuch.mongodb.net/'+process.env.database+'?retryWrites=true&w=majority',
 { 
     useNewUrlParser: true,
@@ -16,7 +17,6 @@ mongoose.connect('mongodb+srv://ecommerce:'+process.env.password+'@ecommerce.gmu
 }
 )
 
-app.use('/uploads', express.static('./uploads'));
 app.use(morgan('dev'));
 app.use(bodyParser.urlencoded({extended:false}))
 app.use(bodyParser.json())
@@ -36,10 +36,19 @@ app.use((req,res,next)=>{
 })
 
 
-app.use('/users',UserRouter)
-app.use('/posts',PostRouter)
-app.use('/followers',FollowerRouter)
-app.use('/messages',MessageRouter)
+
+app.use('/', express.static(path.join(__dirname, 'build')));
+app.use('/api/uploads', express.static(path.join(__dirname, 'uploads')));
+
+app.use('/api/users',UserRouter)
+app.use('/api/posts',PostRouter)
+app.use('/api/followers',FollowerRouter)
+app.use('/api/messages',MessageRouter)
+
+// Catch-all route to handle client-side routing in your front-end application
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'build', 'index.html'));
+});
 
 app.use((req,res,next)=>{
     var error = new Error('404 Not found !');
