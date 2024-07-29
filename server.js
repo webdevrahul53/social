@@ -12,7 +12,7 @@ io.on("connection", (socket) => {
     socket.on("message-sent", (message) => {
         socket.broadcast.emit("broadcast-message", message)
     })
-});
+}, err => console.log(err));
 
 server.listen(4000,()=>{
     console.log('listening to port 4000')

@@ -148,7 +148,7 @@ router.post('/login',(req,res)=>{
             bcrypt.compare(req.body.password,user.password,(err,result)=>{
 
                 if(result){
-                    var token = jwt.sign({email:user.email,id:user._id},process.env.jwt_key,{expiresIn:"1h"});
+                    var token = jwt.sign({email:user.email,id:user._id},process.env.jwt_key,{expiresIn:"24h"});
                     res.status(200).json({
                         status: 1,
                         message:"Auth Successfull",
