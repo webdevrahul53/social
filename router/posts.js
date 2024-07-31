@@ -42,23 +42,12 @@ const checkAuth = require('../middleware/auth');
 const checkAdmin = require('../middleware/admin');
 const Posts = require('../model/posts');
 
-router.get('/', async (req,res)=>{
-    try {
-        const result = await Posts.aggregate([ 
-            { $lookup: {
-                from: 'users',
-                localField: 'user_id',
-                foreignField: '_id',
-                as: 'user_id' } 
-            }, 
-            { $unwind: '$user_id' },
-            {$project: {user_id: 1, caption:1, image: 1, likes: 1}} 
-        ])
-        res.status(200).json(result)
-
-    }catch(err) {
-        res.status(500).json(err) 
-    }
+router.get('/', (req,res)=>{
+    Posts.find().select('user_id caption image likes comments').populate('user_id comments.user_id').exec().then(docs => {
+        res.status(200).json(docs)
+    }).catch(err => {
+        res.status(500).json(err)
+    })
 })
 
 router.post('/',checkAuth,upload.single('image'),(req,res)=>{
@@ -80,6 +69,33 @@ router.post('/',checkAuth,upload.single('image'),(req,res)=>{
             }
         })
     }).catch(err=>{
+        res.status(500).json(err)
+    }) 
+
+})
+
+router.post('/add_comment/:id',checkAuth,(req,res)=>{
+    const comment = {
+        _id:new mongoose.Types.ObjectId(),
+        user_id:req.body.user_id,
+        text:req.body.text,
+    }
+    
+    Posts.updateOne({_id: req.params['id']}, {$push: {'comments': comment}}).then(()=>{ 
+
+        Posts.findById(req.params['id']).select('caption image likes comments').populate('comments.user_id').exec().then(docs=>{ 
+            res.status(200).json({
+                message:'Commented to post',
+                status: 1,
+                post: docs
+            })
+        }).catch(err=>{
+            console.log(err)
+            res.status(500).json(err)
+        }) 
+
+    }).catch(err=>{
+        console.log(err)
         res.status(500).json(err)
     }) 
 

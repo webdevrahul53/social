@@ -23,7 +23,7 @@ router.post('/',checkAuth, async (req,res)=>{
       timestamp: new Date(),
       status: 'sent'
     };
-    Messages.findOne({'participants.user_id': senderId, 'participants.user_id': recipientId}).exec().then(docs => {
+    Messages.findOne({$and: [{'participants.user_id': senderId}, {'participants.user_id': recipientId}]}).exec().then(docs => {
       if(docs){
         Messages.updateOne({_id: docs._id}, {$push : {messages: newMessage}}).exec().then(result => {
           res.status(200).json({

@@ -6,6 +6,12 @@ const postSchema = mongoose.Schema({
     image:{type:Object,required:true},
     caption:{type:String,required:true},
     likes:[{type: mongoose.Schema.Types.ObjectId, ref: 'Users'}],
+    comments: [{
+        _id: {type: mongoose.Schema.Types.ObjectId},
+        user_id: {type: mongoose.Schema.Types.ObjectId, ref: 'Users'},
+        text: {type:String,required:true},
+        created_at: {type: Date, default: new Date()}
+    }],
     created_at:{type:Date,default:new Date()}
 })
 
