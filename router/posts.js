@@ -43,19 +43,18 @@ const checkAdmin = require('../middleware/admin');
 const Posts = require('../model/posts');
 
 router.get('/', (req,res)=>{
-    Posts.find().select('user_id caption image likes comments').populate('user_id comments.user_id').exec().then(docs => {
+    Posts.find().select('user_id caption image likes comments').populate('user_id').exec().then(docs => {
         res.status(200).json(docs)
     }).catch(err => {
         res.status(500).json(err)
     })
 })
 
-router.post('/',checkAuth,upload.single('image'),(req,res)=>{
-    console.log(req.file) 
+router.post('/',checkAuth,(req,res)=>{
     const post = new Posts({
         _id:new mongoose.Types.ObjectId(),
         user_id:req.body.user_id,
-        image:req.file,
+        image:req.body.image,
         caption:req.body.caption
     })
     post.save().then(result=>{ 
@@ -78,12 +77,13 @@ router.post('/add_comment/:id',checkAuth,(req,res)=>{
     const comment = {
         _id:new mongoose.Types.ObjectId(),
         user_id:req.body.user_id,
+        email:req.body.email,
         text:req.body.text,
     }
     
     Posts.updateOne({_id: req.params['id']}, {$push: {'comments': comment}}).then(()=>{ 
 
-        Posts.findById(req.params['id']).select('caption image likes comments').populate('comments.user_id').exec().then(docs=>{ 
+        Posts.findById(req.params['id']).select('caption image likes comments').exec().then(docs=>{ 
             res.status(200).json({
                 message:'Commented to post',
                 status: 1,

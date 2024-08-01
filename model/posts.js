@@ -3,12 +3,13 @@ const mongoose = require('mongoose');
 const postSchema = mongoose.Schema({
     _id:mongoose.Schema.Types.ObjectId,
     user_id:{type:mongoose.Schema.Types.ObjectId,required:true,ref:'Users'},
-    image:{type:Object,required:true},
+    image:{type:String,required:true},
     caption:{type:String,required:true},
     likes:[{type: mongoose.Schema.Types.ObjectId, ref: 'Users'}],
     comments: [{
         _id: {type: mongoose.Schema.Types.ObjectId},
         user_id: {type: mongoose.Schema.Types.ObjectId, ref: 'Users'},
+        email: {type:String,required:true},
         text: {type:String,required:true},
         created_at: {type: Date, default: new Date()}
     }],

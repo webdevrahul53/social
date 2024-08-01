@@ -193,9 +193,9 @@ router.get('/:id', async (req,res)=>{
 
 })
 
-router.patch('/update_avatar/:id', checkAuth, upload.single('image'),(req,res)=>{  
+router.patch('/update_avatar/:id', checkAuth,(req,res)=>{  
     
-    Users.update({_id:req.params['id']},{$set: {'avatar': req.file} }).exec()
+    Users.update({_id:req.params['id']},{$set: {'avatar': req.body.image} }).exec()
     .then(docs=>{ 
         res.status(200).json({
             message:"User data updated",
