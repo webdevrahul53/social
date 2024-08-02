@@ -11,12 +11,12 @@ var PostRouter = require('./router/posts')
 var FollowerRouter = require('./router/followers')
 var MessageRouter = require('./router/messages')
 
-mongoose.connect(process.env.mongodburi,
-{ 
+mongoose.connect(process.env.mongodburi, { 
     useNewUrlParser: true,
-    useUnifiedTopology: true 
-}
-)
+    useUnifiedTopology: true,
+    useCreateIndex: true,
+    poolSize: 10
+});
 
 app.use(morgan('dev'));
 app.use(bodyParser.urlencoded({extended:false}))
