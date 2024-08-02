@@ -42,8 +42,9 @@ const checkAuth = require('../middleware/auth');
 const checkAdmin = require('../middleware/admin');
 const Posts = require('../model/posts');
 
-router.get('/', (req,res)=>{
-    Posts.find().select('user_id caption image likes comments').populate('user_id').exec().then(docs => {
+router.get('/', async (req,res)=>{
+    Posts.find().select('user_id caption image likes comments created_at')
+    .sort({created_at: -1}).populate('user_id').exec().then(docs => {
         res.status(200).json(docs)
     }).catch(err => {
         res.status(500).json(err)
