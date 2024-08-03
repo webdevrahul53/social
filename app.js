@@ -3,20 +3,12 @@ var express = require('express');
 var app = express();
 var morgan = require('morgan'); 
 var bodyParser = require('body-parser');
-var mongoose = require('mongoose');
 const path = require('path');
 
 var UserRouter = require('./router/users')
 var PostRouter = require('./router/posts')
 var FollowerRouter = require('./router/followers')
 var MessageRouter = require('./router/messages')
-
-mongoose.connect(process.env.mongodburi, { 
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    useCreateIndex: true,
-    poolSize: 10
-});
 
 app.use(morgan('dev'));
 app.use(bodyParser.urlencoded({extended:false}))
@@ -45,16 +37,6 @@ app.use('/api/users',UserRouter)
 app.use('/api/posts',PostRouter)
 app.use('/api/followers',FollowerRouter)
 app.use('/api/messages',MessageRouter)
-
-// Catch-all route to handle client-side routing in your front-end application
-app.get('*', (req, res) => {
-    const indexPath = path.join(__dirname, 'build', 'index.html');
-    res.sendFile(indexPath, (err) => {
-      if (err) {
-        res.status(500).send(err);
-      }
-    });
-});
 
 app.use((req,res,next)=>{
     var error = new Error('404 Not found !');

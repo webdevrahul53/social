@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const mongoose = require('../connection');
 
 const postSchema = mongoose.Schema({
     _id:mongoose.Schema.Types.ObjectId,
