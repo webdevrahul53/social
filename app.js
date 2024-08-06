@@ -31,6 +31,7 @@ app.use((req,res,next)=>{
 
 
 // app.use('/', express.static(path.join(__dirname, 'build')));
+app.use('/', (req,res) => console.log('Hello world, Lorem ipsum is a sample text'));
 app.use('/api/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use('/api/users',UserRouter)
