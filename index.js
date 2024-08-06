@@ -4,6 +4,9 @@ var app = express();
 var morgan = require('morgan'); 
 var bodyParser = require('body-parser');
 const path = require('path');
+var http = require('http')
+const { Server } =  require("socket.io");
+
 
 var UserRouter = require('./router/users')
 var PostRouter = require('./router/posts')
@@ -31,7 +34,7 @@ app.use((req,res,next)=>{
 
 
 // app.use('/', express.static(path.join(__dirname, 'build')));
-app.use('/', (req,res) => console.log('Hello world, Lorem ipsum is a sample text'));
+// app.use('/', (req,res) => console.log('Hello world, Lorem ipsum is a sample text'));
 app.use('/api/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use('/api/users',UserRouter)
@@ -51,5 +54,18 @@ app.use((error,req,res,next)=>{
         message:error.message
     })
 })
+var server = http.createServer(app);
 
-module.exports = app;
+const io = new Server(server, {
+    cors: {origin: '*'}
+});
+io.on("connection", (socket) => {
+    console.log('a user is connected')
+    socket.on("message-sent", (message) => {
+        socket.broadcast.emit("broadcast-message", message)
+    })
+}, err => console.log(err));
+
+server.listen(4000,()=>{
+    console.log('listening to port 4000')
+});
