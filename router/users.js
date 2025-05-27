@@ -60,46 +60,46 @@ router.get('/',checkAdmin, async (req,res)=>{
     }
 
 })
-
-router.post('/signup',(req,res)=>{ 
-      
-    Users.find({email:req.body.email}).exec().then(docs=>{ 
-        if(docs.length == 0){
-            bcrypt.hash(req.body.password,10,(err,hash)=>{
-                if(err){
-                    res.status(500).json(err)
-                }else{ 
-                    const user = new Users({
-                        _id:new mongoose.Types.ObjectId(),
-                        name:req.body.name,
-                        email:req.body.email,
-                        password:hash
-                    })
-                    user.save().then(result=>{ 
-                        res.status(200).json({
-                            status: 1,
-                            message:'New user added',
-                            user:{
-                                _id:user._id,
-                                name:user.name,
-                                email:user.email,
-                            }
-                        })
-                    }).catch(err=>{
-                        res.status(500).json(err)
-                    })
-                }
-            })
-            
-        }else{
-            res.status(500).json({
+router.post('/signup', async (req, res) => {
+    try {
+        const existingUser = await Users.findOne({ email: req.body.email }).exec();
+        if (existingUser) {
+            return res.status(400).json({
                 status: 0,
-                message:"Emaill Address is already taken by a user. Please assign another one."
-            })
+                message: "Email address is already taken by a user. Please assign another one."
+            });
         }
-    })
-    
-})
+
+        const hashedPassword = await bcrypt.hash(req.body.password, 10);
+        const user = new Users({
+            _id: new mongoose.Types.ObjectId(),
+            name: req.body.name,
+            email: req.body.email,
+            password: hashedPassword
+        });
+
+        const savedUser = await user.save();
+
+        const token = jwt.sign(
+            { email: savedUser.email, id: savedUser._id },
+            process.env.jwt_key,
+            { expiresIn: "24h" }
+        );
+
+        res.status(200).json({
+            status: 1,
+            message: 'New user added and logged in',
+            data: {
+                _id: savedUser._id,
+                name: savedUser.name,
+                email: savedUser.email,
+                token
+            }
+        });
+    } catch (err) {
+        res.status(500).json(err);
+    }
+});
 
 router.post('/login',(req,res)=>{
  
@@ -139,6 +139,47 @@ router.post('/login',(req,res)=>{
     })
 
 })
+
+router.post('/google-signin', async (req, res) => {
+    try {
+        const { email, name, password } = req.body;
+
+        // Check if the user already exists
+        let user = await Users.findOne({ email }).exec();
+
+        if (!user) {
+            // If user does not exist, register the user
+            user = new Users({
+                _id: new mongoose.Types.ObjectId(),
+                name,
+                email,
+                password
+            });
+
+            await user.save();
+        }
+
+        // Generate a token for the user
+        const token = jwt.sign(
+            { email: user.email, id: user._id },
+            process.env.jwt_key,
+            { expiresIn: "24h" }
+        );
+
+        res.status(200).json({
+            status: 1,
+            message: 'Google sign-in successful',
+            data: {
+                _id: user._id,
+                name: user.name,
+                email: user.email,
+                token
+            }
+        });
+    } catch (err) {
+        res.status(500).json(err);
+    }
+});
 
 router.get('/:id', async (req,res)=>{
     
