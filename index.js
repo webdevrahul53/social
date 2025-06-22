@@ -8,6 +8,7 @@ var http = require('http')
 const { Server } =  require("socket.io");
 
 
+var CredentialRouter = require('./router/credentials')
 var UserRouter = require('./router/users')
 var PostRouter = require('./router/posts')
 var FollowerRouter = require('./router/followers')
@@ -37,6 +38,7 @@ app.use((req,res,next)=>{
 // app.use('/', (req,res) => console.log('Hello world, Lorem ipsum is a sample text'));
 // app.use('/api/uploads', express.static(path.join(__dirname, 'uploads')));
 
+app.use('/api/credentials',CredentialRouter)
 app.use('/api/users',UserRouter)
 app.use('/api/posts',PostRouter)
 app.use('/api/followers',FollowerRouter)
